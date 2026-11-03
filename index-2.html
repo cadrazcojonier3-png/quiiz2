@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetario Web</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            background-color: #202020;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+
+        .encabezado {
+            text-align: center;
+            color: #eeeeee;
+            line-height: 1.45;
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+
+        .contenedor {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px 25px 30px;
+            background-color: #f7f3f0;
+        }
+
+        .titulo-principal {
+            margin: 0;
+            text-align: center;
+            color: #203b65;
+            font-size:  clamp(38px, 7vw, 66px);
+            font-weight: bold;
+        }
+
+        .subtitulo {
+            margin: 4px 0 28px;
+            text-align: center;
+            color: #555;
+            font-size: 22px;
+        }
+
+        .titulo-seccion {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 0 0 25px;
+            color: #203b65;
+            font-size: 38px;
+        }
+
+        .titulo-seccion::after {
+            content: "";
+            height: 3px;
+            flex: 1;
+            background-color: #58a6c4;
+            margin-top: 10px;
+        }
+
+        #lista-recetas {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .receta {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            padding: 12px;
+            border: 1px solid #ded8d3;
+            border-radius: 20px;
+            background-color: #faf7f4;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+        }
+
+        .receta img {
+            width: 38%;
+            min-width: 180px;
+            height: 238px;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .informacion {
+            flex: 1;
+            padding: 0 4px;
+        }
+
+        .informacion h3 {
+            margin: 0 0 18px;
+            color: #203b65;
+            font-size: 30px;
+        }
+
+        .informacion p {
+            margin: 0 0 13px;
+            padding: 5px 8px;
+            border-radius: 5px;
+            background-color: #f1ece8;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .informacion strong {
+            color: #424242;
+        }
+
+        .mensaje {
+            text-align: center;
+            padding: 25px;
+            color: #444;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 8px;
+            }
+
+            .contenedor {
+                padding: 18px 12px;
+            }
+
+            .encabezado {
+                font-size: 14px;
+            }
+
+            .titulo-seccion {
+                font-size: 29px;
+            }
+
+            .receta {
+                flex-direction: column;
+            }
+
+            .receta img {
+                width: 100%;
+                min-width: 0;
+                height: 220px;
+            }
+
+            .informacion h3 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="encabezado">
+        <strong>Programación Web I</strong><br>
+        Ingeniería de Sistemas<br>
+        Facultad de Ciencias Básicas, Ingenierías y Arquitectura<br>
+        Corporación Universitaria del Caribe
+    </header>
+
+    <main class="contenedor">
+        <h1 class="titulo-principal">Recetario Web</h1>
+        <p class="subtitulo">Descubre dos recetas deliciosas para preparar en casa.</p>
+
+        <h2 class="titulo-seccion">Nuestras recetas</h2>
+
+        <section id="lista-recetas">
+            <p class="mensaje">Cargando recetas...</p>
+        </section>
+    </main>
+
+    <script>
+        const listaRecetas = document.getElementById("lista-recetas");
+
+        async function cargarRecetas() {
+            try {
+                const respuesta = await fetch("https://dummyjson.com/recipes?limit=2");
+
+                if (!respuesta.ok) {
+                    throw new Error("No se pudieron cargar las recetas");
+                }
+
+                const datos = await respuesta.json();
+
+                listaRecetas.innerHTML = "";
+
+                datos.recipes.forEach(function(receta) {
+                    const tarjeta = document.createElement("article");
+                    tarjeta.className = "receta";
+
+                    const imagen = document.createElement("img");
+                    imagen.src = receta.image;
+                    imagen.alt = receta.name;
+
+                    const informacion = document.createElement("div");
+                    informacion.className = "informacion";
+
+                    const titulo = document.createElement("h3");
+                    titulo.textContent = receta.name;
+
+                    const cocina = document.createElement("p");
+                    cocina.innerHTML = "<strong>Tipo de cocina:</strong> " + receta.cuisine;
+
+                    const dificultad = document.createElement("p");
+                    dificultad.innerHTML = "<strong>Dificultad:</strong> " +
+                        (receta.difficulty === "Easy" ? "Fácil" :
+                        receta.difficulty === "Medium" ? "Media" : receta.difficulty);
+
+                    const preparacion = document.createElement("p");
+                    preparacion.innerHTML = "<strong>Tiempo de preparación:</strong> " +
+                        receta.prepTimeMinutes + " minutos";
+
+                   const primerPaso = document.createElement("p");
+
+primerPaso.innerHTML = "<strong>Preparación:</strong> " +
+    (receta.name === "Vegetarian Stir-Fry"
+        ? "Preparar y cortar todos los vegetales."
+        : receta.instructions[0]);
+
+                    informacion.appendChild(titulo);
+                    informacion.appendChild(cocina);
+                    informacion.appendChild(dificultad);
+                    informacion.appendChild(preparacion);
+                    informacion.appendChild(primerPaso);
+
+                    tarjeta.appendChild(imagen);
+                    tarjeta.appendChild(informacion);
+
+                    listaRecetas.appendChild(tarjeta);
+                });
+
+            } catch (error) {
+                listaRecetas.innerHTML =
+                    '<p class="mensaje">Ocurrió un error al cargar las recetas. Intenta nuevamente.</p>';
+                console.error(error);
+            }
+        }
+
+        cargarRecetas();
+    </script>
+</body>
+</html>
